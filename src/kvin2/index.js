@@ -1,3 +1,4 @@
+// noinspection all
 /**
  *  @file       kvin.js                A general-purpose library for marshaling and serializing
  *                                      ES objects.  This library is a functional superset of JSON
