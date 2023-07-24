@@ -44,50 +44,6 @@
 
 "use strict";
 
-{/* This prologue allows a CJS2 module's exports to be loaded with eval(readFileSync(filename)) */
-  var module;
-  let moduleSystemType;
-  let realModule = module;
-  
-  if (typeof __webpack_require__ !== 'undefined')
-    moduleSystemType = 'webpack';
-  else if (typeof module !== 'undefined' && typeof module.declare !== 'undefined')
-    moduleSystemType = 'cjs2';
-  else if (typeof module !== 'undefined' && typeof require === 'function' && typeof exports !== 'undefined' && module.exports === exports)
-    moduleSystemType = 'nodejs';
-  else if (typeof exports !== 'undefined' && typeof require === 'function')
-    moduleSystemType = 'cjs1';
-  else
-    moduleSystemType = 'none';
-
-  module = Object.assign({}, realModule);
-
-  if (moduleSystemType === 'nodejs' || moduleSystemType === 'webpack' || moduleSystemType === 'cjs1') {
-    module.declare = function kvin$$cjs1$$moduleDeclare(deps, factory) {
-      factory(null, exports, null);
-      module = realModule;
-      return exports;
-    };
-  } else if (moduleSystemType === 'cjs2') {
-    module = realModule;
-  } else if (moduleSystemType === 'none') {
-    module.declare = function kvin$$cjs1$$moduleDeclare(deps, factory) {
-      let exports = {};
-      factory(null, exports, null);
-      module = realModule;
-
-      if (typeof window === 'object')
-        window.KVIN = exports;
-      if (typeof globalThis === 'object')
-        globalThis.KVIN = exports;
-
-      return exports;
-    };
-  }
-/* Now initialize the module by invoking module.declare per CommonJS Modules/2.0-draft8 */
-  
-/* eslint-disable indent */ module.declare([], function (require, exports, module) {
-
 /** 
  * @constructor to create an alternate KVIN context. This allows us to recogonize instance of
  *              the standard classes from a different JS context or have different tuning parameters.   
@@ -1255,4 +1211,3 @@ for (let prop in exports.base_kvin)
 }
 
 exports.KVIN = KVIN;
-/* end of module */ })}
