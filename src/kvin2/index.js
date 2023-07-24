@@ -208,6 +208,9 @@ KVIN.prototype.unprepare = function unprepare(seen, po, position) {
     if (po.hasOwnProperty('mapKeys') || po.hasOwnProperty('mapVals')) {
         return this.unprepare$Map(seen, po, position);
     }
+    if (po.hasOwnProperty('setVals')) {
+        return this.unprepare$Set(seen, po, position);
+    }
     if (po.hasOwnProperty('ab16') || po.hasOwnProperty('isl16')) {
         return this.unprepare$ArrayBuffer16(seen, po, position);
     }
@@ -330,6 +333,10 @@ KVIN.prototype.unprepare$Map = function unprepare$Map(seen, po, position) {
     }
 
     return m;
+};
+
+KVIN.prototype.unprepare$Set = function unprepare$Set(seen, po, position) {
+    return new Set(po.setVals.arr);
 };
 
 function unprepare$bigint(arg) {
@@ -601,7 +608,13 @@ KVIN.prototype.prepare = function prepare(seen, o, where) {
         return this.prepare$Map(seen, o, where);
     }
     if (o.constructor === WeakMap) {
-        return prepare$WeakMap(o);
+        return this.prepare$WeakMap(o);
+    }
+    if (o.constructor === Set) {
+        return this.prepare$Set(seen, o, where);
+    }
+    if (o.constructor === WeakSet) {
+        return this.prepare$WeakSet(o);
     }
     if (o.constructor === String || o.constructor === Number || o.constructor === Boolean) {
         return this.prepare$boxedPrimitive(o);
@@ -851,7 +864,32 @@ KVIN.prototype.prepare$Map = function prepare$Map(seen, o, where) {
  *  @param   o      The WeakMap we are preparing
  */
 KVIN.prototype.prepare$WeakMap = function prepare$WeakMap(o) {
-    return { ctr: ctors.indexOf(o.constructor), arg: [] };
+    return { ctr: this.ctors.indexOf(o.constructor), arg: [] };
+};
+
+/** Prepare a Set.  This can be robustly handled with the existing array preparation, as
+ *  long as we differentiate it from normal arrays and treat keys and values separately.
+ *
+ *  @param   seen   The current seen list for this marshal - things pointers point to
+ *  @param   o      The Set we are preparing
+ *  @param   where  Human description of where we are in the object, for debugging purposes
+ */
+KVIN.prototype.prepare$Set = function prepare$Set(seen, o, where) {
+    let setArr = Array.from(o);
+    return {
+        setVals: this.prepare$Array(seen, setArr, where)
+    };
+};
+
+/** Prepare a WeakSet. The closest to correct behaviour for a WeakSet serialized over
+ * a network is for the resulting WeakSet to be empty, since the WeakSet keys are
+ * by design never directly referenced or retained, and cannot be iterated on.
+ * This is why we pass an empty array to the constructor.
+ *
+ * @param   o      The WeakSet we are preparing
+ */
+KVIN.prototype.prepare$WeakSet = function prepare$WeakSet(o) {
+    return { ctr: this.ctors.indexOf(o.constructor), arg: [] };
 };
 
 /** Detect JavaScript strings which contain ill-formed UTF-16 sequences */
@@ -1047,7 +1085,36 @@ function prepare$undefined(o) {
  *  @returns    an object which can be serialized with json
  */
 KVIN.prototype.marshal = function serialize$$marshal(what) {
-    return { _serializeVerId: this.serializeVerId, what: this.prepare([], what, 'top') };
+    let value = { _serializeVerId: this.serializeVerId, what: this.prepare([], what, 'top') };
+    // small patch here because this library is broken:
+    // by default, unresolved promises get marshalled as {resolve: new Promise()}
+    // we now need to traverse all objects and remove those.
+    // if val is an object:
+    //   if val.resolve is a promise:
+    //     replace with { _serializeVerId: 'v8', what: null }
+    //   else:
+    //     recurse
+    // else if val is an array:
+    //   recurse
+    // else:
+    //   do nothing
+    function depromisify(val) {
+        if (typeof val === 'object') {
+            if (val && val.resolve && val.resolve instanceof Promise) {
+                val.resolve = { _serializeVerId: 'v8', what: '<Unresolved Promise>' };
+            } else {
+                for (let key in val) {
+                    depromisify(val[key]);
+                }
+                return val;
+            }
+        } else if (Array.isArray(val)) {
+            val.map(depromisify);
+        }
+    }
+
+    depromisify(value.what);
+    return value;
 };
 
 /**
