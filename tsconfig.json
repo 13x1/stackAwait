@@ -3,7 +3,10 @@
         "target": "ESNext",
         "useDefineForClassFields": true,
         "module": "ESNext",
-        "lib": ["ESNext"],
+        "lib": [
+          "ESNext",
+          "dom" // mainly for unit testing for `Response` to be available
+        ],
         "moduleResolution": "Node",
         "sourceMap": true,
         "resolveJsonModule": true,
