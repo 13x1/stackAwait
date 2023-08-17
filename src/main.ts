@@ -2,6 +2,19 @@ import KVIN from '@/kvin2';
 
 type AU = Array<unknown>;
 
+type PromiseResult<T> = {
+    state: "fulfilled",
+    value: T,
+    promise: Promise<T>
+} | {
+    state: "rejected",
+    reason: Error,
+    promise: Promise<T>
+} | {
+    state: "pending",
+    promise: Promise<T>
+}
+
 interface StackAwaitOpts {
     /**
      * Serialize an async function call to a string.
@@ -22,10 +35,7 @@ interface StackAwaitOpts {
     asyncScope:
         | undefined
         | false
-        | {
-              promises: Map<string, Promise<unknown>>;
-              results: Map<string, unknown>;
-          };
+        | Map<string, PromiseResult<unknown>>;
 }
 
 export const stackAwaitOptsDefaults: StackAwaitOpts = {
@@ -40,11 +50,11 @@ export function stackAwait<Args extends AU, Return>(
     opts: Opts,
     fn: (...args: Args) => Promise<Return>,
     ...args: Args
-);
+): Return;
 export function stackAwait<Args extends AU, Return>(
     fn: (...args: Args) => Promise<Return>,
     ...args: Args
-);
+): Return;
 export function stackAwait(...args: unknown[]) {
     const opts = typeof args[0] === 'object' ? args.shift() : {};
     const func = args.shift() as (...args: unknown[]) => Promise<unknown>;
