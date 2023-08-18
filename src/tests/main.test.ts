@@ -1,6 +1,6 @@
 import KVIN from '@/kvin2';
 import { describe, it, expect, assert } from 'vitest';
-import { stackAwait, stackAwaitOptsDefaults } from '@/main.js';
+import { stackAwait, stackAwaitOptsDefaults, __debug__ } from '@/main.js';
 
 describe('Types', () => {
     it('should compile', () => null);
@@ -10,18 +10,21 @@ describe('Types', () => {
     assert(stackAwait({}, fetch, 'test', {method: 'POST'}) satisfies Response);
 });
 
+
+const ser = (arg: unknown) => stackAwaitOptsDefaults.serializer(() => null, [], arg);
+
+function deser(str: string): unknown {
+    return (KVIN.deserialize(str) as {
+        vArgs: unknown
+    }).vArgs;
+}
+
 describe('Serialization', () => {
-    const ser = (arg: unknown) => stackAwaitOptsDefaults.serializer(() => null, [], arg);
-
-    function deser(str: string): unknown {
-        return (KVIN.deserialize(str) as { vArgs: unknown }).vArgs;
-    }
-
     function test(gen: () => Array<unknown>, snap = true, mapper = (e: unknown) => e) {
         expect(ser(gen()), 'serialization').toBe(ser(gen()));
         expect(gen().map(mapper), 'equality').toEqual(gen().map(mapper));
         expect(gen().map(mapper), 're-serialized equality').toStrictEqual(
-            (deser(ser(gen())) as Array<unknown>).map(mapper)
+            (deser(ser(gen())) as Array<unknown>).map(mapper),
         );
         if (snap) expect(ser(gen())).toMatchSnapshot();
     }
@@ -39,7 +42,7 @@ describe('Serialization', () => {
             new Float64Array([1, 2, 3]),
             new Uint16Array([1, 2, 3]),
             new Map([['test', 'test']]),
-            new Set(['test', '123'])
+            new Set(['test', '123']),
         ]);
     });
 
@@ -67,7 +70,7 @@ describe('Serialization', () => {
             BigInt(123),
             /test/,
             new String('test'),
-            new Number(123)
+            new Number(123),
         ]);
         // errors tend to be a problem child bc stack traces can be different
         const err = new Error('test');
@@ -94,11 +97,11 @@ describe('Serialization', () => {
                     async () => 5,
                     () => {
                         return 5;
-                    }
+                    },
                 ];
             },
             true,
-            e => e.toString()
+            e => e.toString(),
         );
     });
 
@@ -124,11 +127,11 @@ describe('Serialization', () => {
                     async () => n,
                     () => {
                         return n;
-                    }
+                    },
                 ];
             },
             true,
-            e => e.toString()
+            e => e.toString(),
         );
     });
 
@@ -140,7 +143,7 @@ describe('Serialization', () => {
                 return [p];
             },
             true,
-            e => e.toString()
+            e => e.toString(),
         );
     });
 
@@ -150,7 +153,63 @@ describe('Serialization', () => {
                 return [new Response(Math.random().toString())];
             },
             true,
-            e => e.toString()
+            e => e.toString(),
         );
     });
+});
+
+// 
+
+describe('Argument parsing', () => {
+    it('should work with options', () => {
+        __debug__.return_args = true;
+        const res = stackAwait({
+            vArgs: 123,
+            bThis: 456,
+            asyncScope: new Map(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            serializer: null as any,
+        }, async n => n, 42)
+
+        expect(ser(res)).toBe(ser({
+            opts: {
+                vArgs: 123,
+                bThis: 456,
+                asyncScope: new Map(),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                serializer: null as any,
+            },
+            func: (() => (async (n: number) => n))(),
+            args: [42]
+        }))
+        __debug__.return_args = false;
+    });
+    it('should work with empty options', () => {
+        __debug__.return_args = true;
+        const res = stackAwait({
+
+        }, async n => n, 42)
+
+        expect(ser(res)).toBe(ser({
+            opts: {
+
+            },
+            func: (() => (async (n: number) => n))(),
+            args: [42]
+        }))
+        __debug__.return_args = false;
+    });
+    it('should work with no options', () => {
+        __debug__.return_args = true;
+        const res = stackAwait(async n => n, 42)
+
+        expect(ser(res)).toBe(ser({
+            opts: {},
+            func: (() => (async (n: number) => n))(),
+            args: [42]
+        }))
+        __debug__.return_args = false;
+    });
+
+
 });

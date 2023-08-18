@@ -15,7 +15,7 @@ type PromiseResult<T> = {
     promise: Promise<T>
 }
 
-interface StackAwaitOpts {
+interface StackAwaitOpts<This = undefined> {
     /**
      * Serialize an async function call to a string.
      * @param {(...a: AU) => unknown} fn The function (needs to be serialized too!)
@@ -36,19 +36,24 @@ interface StackAwaitOpts {
         | undefined
         | false
         | Map<string, PromiseResult<unknown>>;
+    /**
+     * Bind (`this`) argument
+     */
+    bThis: This
 }
 
 export const stackAwaitOptsDefaults: StackAwaitOpts = {
     serializer: (fn, args, vArgs) => KVIN.stringify({fn, args, vArgs}),
     vArgs: undefined,
-    asyncScope: undefined
+    asyncScope: undefined,
+    bThis: undefined
 };
 
-type Opts = Partial<StackAwaitOpts>;
+type Opts<T> = Partial<StackAwaitOpts<T>>;
 
-export function stackAwait<Args extends AU, Return>(
-    opts: Opts,
-    fn: (...args: Args) => Promise<Return>,
+export function stackAwait<Args extends AU, Return, This = undefined>(
+    opts: Opts<This>,
+    fn: (this: This, ...args: Args) => Promise<Return>,
     ...args: Args
 ): Return;
 export function stackAwait<Args extends AU, Return>(
@@ -58,5 +63,12 @@ export function stackAwait<Args extends AU, Return>(
 export function stackAwait(...args: unknown[]) {
     const opts = typeof args[0] === 'object' ? args.shift() : {};
     const func = args.shift() as (...args: unknown[]) => Promise<unknown>;
-    console.log({opts, func, args});
+    if (__debug__.return_args) return {opts, func, args};
+    return null
+
+}
+
+
+export const __debug__ = {
+    return_args: false
 }

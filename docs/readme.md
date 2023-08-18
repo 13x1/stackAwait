@@ -88,7 +88,7 @@ const p2 = new Promise(r => r('Hello world!'));
 assert(p1 !== p2);
 ```
 
-And the same thing happens with generated values:
+And the same thi[main.test.ts](..%2Fsrc%2Ftests%2Fmain.test.ts)ng happens with generated values:
 
 ```ts
 const curryFactory = (fn: Function) => () => fn();

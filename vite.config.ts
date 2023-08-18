@@ -32,8 +32,17 @@ export default defineConfig({
         },
         outputFile: './test-results/vitest-report/index.html',
         reporters: ['html', 'default'],
+        exclude: [
+            './src/**/*.js'
+        ],
         coverage: {
-            provider: 'v8',
+            provider: 'istanbul',
+            exclude: [
+                'src/kvin2/index.js',
+                'src/kvin2',
+                'src/kvin2/',
+                'src/kvin2/*',
+            ],
             reportsDirectory: './test-results/vitest-coverage'
         }
     }

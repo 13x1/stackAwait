@@ -189,7 +189,7 @@ KVIN.prototype.unprepare = function unprepare(seen, po, position) {
     if (po.hasOwnProperty('raw')) {
         if (typeof po.raw === 'object' && po.raw !== null && !Array.isArray(po.raw)) {
             if (!po.used) po.used = true;
-            else return JSON.parse(JSON.stringify(po.raw));
+            else return JSON.parse(JSON.stringify(po.raw, null, 4));
             return Object.assign(new this.standardObjects.Object(), po.raw);
         }
         return po.raw;
@@ -758,7 +758,7 @@ KVIN.prototype.prepare$Array = function prepare$Array(seen, o, where) {
             pa.arr.push(this.prepare(seen, o[i], where + '.' + i));
         }
 
-        json = JSON.stringify(pa.arr[pa.arr.length - 1]);
+        json = JSON.stringify(pa.arr[pa.arr.length - 1], null, 4);
         if (json === lastJson) {
             if (pa.arr[pa.arr.length - 2].lst) {
                 pa.arr[pa.arr.length - 2].lst++;
@@ -1195,7 +1195,7 @@ KVIN.prototype.unmarshal = function serialize$$unmarshal(obj) {
     }
     if (!obj.hasOwnProperty('_serializeVerId')) {
         try {
-            let str = JSON.stringify(obj);
+            let str = JSON.stringify(obj, null, 4);
             throw new Error(
                 'Invalid serialization format (' +
                     str.slice(0, 20) +
@@ -1225,7 +1225,7 @@ KVIN.prototype.unmarshal = function serialize$$unmarshal(obj) {
  *  @returns    The JSON serialization of the prepared object representing what.
  */
 KVIN.prototype.serialize = function serialize(what) {
-    return JSON.stringify(this.marshal(what));
+    return JSON.stringify(this.marshal(what), null, 4);
 };
 
 /**
@@ -1235,7 +1235,7 @@ KVIN.prototype.serialize = function serialize(what) {
  * @returns {Promise<string>} A JSON serialization representing the value
  */
 KVIN.prototype.serializeAsync = async function serializeAsync(value) {
-    return JSON.stringify(await this.marshalAsync(value));
+    return JSON.stringify(await this.marshalAsync(value), null, 4);
 };
 
 /** Deserialize a value.
