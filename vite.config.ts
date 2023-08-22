@@ -10,6 +10,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const exports = ['main.ts'];
 const main = exports[0];
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     build: {
         lib: {

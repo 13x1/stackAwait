@@ -210,6 +210,42 @@ describe('Argument parsing', () => {
         }))
         __debug__.return_args = false;
     });
-
-
+    // parse with no options, some options and all options set
+    it('should work with no options after parsing', () => {
+        __debug__.return_proc_args = true;
+        const res = stackAwait(async n => n, 42)
+        expect(ser(res)).toBe(ser(stackAwaitOptsDefaults))
+        __debug__.return_proc_args = false;
+    })
+    it('should work with some options after parsing', () => {
+        __debug__.return_proc_args = true;
+        const res = stackAwait({
+            vArgs: 123,
+            bThis: 456,
+        }, async n => n, 42)
+        expect(ser(res)).toBe(ser({
+            ...stackAwaitOptsDefaults,
+            vArgs: 123,
+            bThis: 456,
+        }))
+        __debug__.return_proc_args = false;
+    })
+    it('should work with all options after parsing', () => {
+        __debug__.return_proc_args = true;
+        const res = stackAwait({
+            vArgs: 123,
+            bThis: 456,
+            asyncScope: new Map(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            serializer: null as any,
+        }, async n => n, 42)
+        expect(ser(res)).toBe(ser({
+            vArgs: 123,
+            bThis: 456,
+            asyncScope: new Map(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            serializer: null as any,
+        }))
+        __debug__.return_proc_args = false;
+    })
 });

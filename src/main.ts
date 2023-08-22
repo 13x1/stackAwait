@@ -64,11 +64,18 @@ export function stackAwait(...args: unknown[]) {
     const opts = typeof args[0] === 'object' ? args.shift() : {};
     const func = args.shift() as (...args: unknown[]) => Promise<unknown>;
     if (__debug__.return_args) return {opts, func, args};
-    return null
 
+    const options = Object.assign({}, stackAwaitOptsDefaults, opts);
+
+    if (__debug__.return_proc_args) return options;
+
+
+    return null
 }
 
+let cache = new Map<string, PromiseResult<unknown>>();
 
 export const __debug__ = {
-    return_args: false
+    return_args: false,
+    return_proc_args: false,
 }

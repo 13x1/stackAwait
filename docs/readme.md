@@ -71,7 +71,7 @@ function __main__() {}
 async function myMainFunction() {}
 async function handleRequest() {}
 async function runSSR() {}
-async function runAsyncStack() {} // 3. ✅ Ca(t)ching and 1. ⬇️ Calling next fn
+async function runAsyncStack() {} // 3. ✅ Ca(t)ching and 1. 4 Calling next fn
 function SSRComponent() {} //· · · · ·  ⬆️ [uncaught err]    ⬇️ [fn call]
 function App() {} // · · · · · · · · ·  ⬆️ [uncaught err]    ⬇️ [fn call]
 function MyComponent() {} // · · · · ·  ⬆️ [uncaught err]    ⬇️ [fn call]
