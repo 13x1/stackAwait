@@ -15,6 +15,15 @@ type PromiseResult<T> = {
     promise: Promise<T>
 }
 
+interface FunctionalCallData {
+    fn: (...args: AU) => unknown;
+    args: AU;
+    vArgs: unknown;
+    bThis: unknown;
+}
+
+type PromiseMap = Map<string, PromiseResult<unknown>>
+
 interface StackAwaitOpts<This = undefined> {
     /**
      * Serialize an async function call to a string.
@@ -23,7 +32,7 @@ interface StackAwaitOpts<This = undefined> {
      * @param vArgs The virtual arguments to the function
      * @returns {string}
      */
-    serializer: (fn: (...a: AU) => unknown, args: AU, vArgs: unknown) => string;
+    serializer: (data: FunctionalCallData) => string;
     /**
      * The virtual arguments to the function.
      */
@@ -32,10 +41,7 @@ interface StackAwaitOpts<This = undefined> {
      * The async scope object to use.
      * Pass `false` or `undefined` to disable.
      */
-    asyncScope:
-        | undefined
-        | false
-        | Map<string, PromiseResult<unknown>>;
+    asyncScope: undefined | false | PromiseMap
     /**
      * Bind (`this`) argument
      */
@@ -43,13 +49,17 @@ interface StackAwaitOpts<This = undefined> {
 }
 
 export const stackAwaitOptsDefaults: StackAwaitOpts = {
-    serializer: (fn, args, vArgs) => KVIN.stringify({fn, args, vArgs}),
+    serializer: data => KVIN.stringify(data),
     vArgs: undefined,
     asyncScope: undefined,
     bThis: undefined
 };
 
 type Opts<T> = Partial<StackAwaitOpts<T>>;
+
+const nullCache: PromiseMap = new Map()
+let cache = nullCache
+
 
 export function stackAwait<Args extends AU, Return, This = undefined>(
     opts: Opts<This>,
@@ -64,16 +74,11 @@ export function stackAwait(...args: unknown[]) {
     const opts = typeof args[0] === 'object' ? args.shift() : {};
     const func = args.shift() as (...args: unknown[]) => Promise<unknown>;
     if (__debug__.return_args) return {opts, func, args};
-
     const options = Object.assign({}, stackAwaitOptsDefaults, opts);
-
     if (__debug__.return_proc_args) return options;
-
 
     return null
 }
-
-let cache = new Map<string, PromiseResult<unknown>>();
 
 export const __debug__ = {
     return_args: false,

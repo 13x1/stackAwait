@@ -4,52 +4,38 @@ exports[`Serialization > should fail to serialize closures 1`] = `
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
+        \\"arr\\": [
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"test1\\",
+                \\"arg\\": \\"async function* test1() {\\\\n          await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n          yield n;\\\\n        }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"test2\\",
+                \\"arg\\": \\"async function* test2() {\\\\n            await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n            yield n;\\\\n          }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"\\",
+                \\"arg\\": \\"async function* () {\\\\n            yield n;\\\\n          }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"\\",
+                \\"arg\\": \\"async () => n\\"
+            },
+            {
                 \\"ctr\\": 15,
                 \\"ps\\": {},
                 \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
-            },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"test1\\",
-                        \\"arg\\": \\"async function* test1() {\\\\n          await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n          yield n;\\\\n        }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"test2\\",
-                        \\"arg\\": \\"async function* test2() {\\\\n            await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n            yield n;\\\\n          }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"async function* () {\\\\n            yield n;\\\\n          }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"async () => n\\"
-                    },
-                    {
-                        \\"ctr\\": 15,
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"() => {\\\\n            return n;\\\\n          }\\"
-                    }
-                ]
+                \\"arg\\": \\"() => {\\\\n            return n;\\\\n          }\\"
             }
-        }
+        ]
     }
 }"
 `;
@@ -58,26 +44,12 @@ exports[`Serialization > should fail to serialize objects like Response 1`] = `
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
-            },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": \\"Response\\",
-                        \\"ps\\": {}
-                    }
-                ]
+        \\"arr\\": [
+            {
+                \\"ctr\\": \\"Response\\",
+                \\"ps\\": {}
             }
-        }
+        ]
     }
 }"
 `;
@@ -86,28 +58,14 @@ exports[`Serialization > should fail to serialize promises 1`] = `
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
-            },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"resolve\\": {
-                            \\"_serializeVerId\\": \\"v8\\",
-                            \\"what\\": \\"<Unresolved Promise>\\"
-                        }
-                    }
-                ]
+        \\"arr\\": [
+            {
+                \\"resolve\\": {
+                    \\"_serializeVerId\\": \\"v8\\",
+                    \\"what\\": \\"<Unresolved Promise>\\"
+                }
             }
-        }
+        ]
     }
 }"
 `;
@@ -116,47 +74,33 @@ exports[`Serialization > should serialize Date, URL, Error, BigInt, RegExp and b
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
+        \\"arr\\": [
+            {
+                \\"ctr\\": 19,
                 \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
+                \\"arg\\": \\"2023-07-23T19:33:45.093Z\\"
             },
-            \\"args\\": {
-                \\"raw\\": []
+            {
+                \\"ctr\\": 18,
+                \\"ps\\": {},
+                \\"arg\\": \\"https://example.com/\\"
             },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": 19,
-                        \\"ps\\": {},
-                        \\"arg\\": \\"2023-07-23T19:33:45.093Z\\"
-                    },
-                    {
-                        \\"ctr\\": 18,
-                        \\"ps\\": {},
-                        \\"arg\\": \\"https://example.com/\\"
-                    },
-                    {
-                        \\"bigint\\": \\"123\\"
-                    },
-                    {
-                        \\"ctr\\": 10,
-                        \\"arg\\": \\"test\\"
-                    },
-                    {
-                        \\"ctr\\": 12,
-                        \\"arg\\": \\"test\\"
-                    },
-                    {
-                        \\"ctr\\": 11,
-                        \\"arg\\": \\"123\\"
-                    }
-                ]
+            {
+                \\"bigint\\": \\"123\\"
+            },
+            {
+                \\"ctr\\": 10,
+                \\"arg\\": \\"test\\"
+            },
+            {
+                \\"ctr\\": 12,
+                \\"arg\\": \\"test\\"
+            },
+            {
+                \\"ctr\\": 11,
+                \\"arg\\": \\"123\\"
             }
-        }
+        ]
     }
 }"
 `;
@@ -165,18 +109,16 @@ exports[`Serialization > should serialize JSON primitives 1`] = `
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
+        \\"arr\\": [
+            \\"test\\",
+            1,
+            true,
+            {
+                \\"raw\\": {
+                    \\"test\\": \\"test\\"
+                }
             },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
+            {
                 \\"arr\\": [
                     \\"test\\",
                     1,
@@ -185,22 +127,10 @@ exports[`Serialization > should serialize JSON primitives 1`] = `
                         \\"raw\\": {
                             \\"test\\": \\"test\\"
                         }
-                    },
-                    {
-                        \\"arr\\": [
-                            \\"test\\",
-                            1,
-                            true,
-                            {
-                                \\"raw\\": {
-                                    \\"test\\": \\"test\\"
-                                }
-                            }
-                        ]
                     }
                 ]
             }
-        }
+        ]
     }
 }"
 `;
@@ -209,63 +139,49 @@ exports[`Serialization > should serialize Object graphs with cycles, Arrays with
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
-            },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": 0,
-                        \\"ps\\": {
-                            \\"test\\": {
-                                \\"raw\\": \\"test\\"
-                            },
-                            \\"obj\\": {
-                                \\"seen\\": 3
-                            }
-                        }
+        \\"arr\\": [
+            {
+                \\"ctr\\": 0,
+                \\"ps\\": {
+                    \\"test\\": {
+                        \\"raw\\": \\"test\\"
                     },
+                    \\"obj\\": {
+                        \\"seen\\": 1
+                    }
+                }
+            },
+            {
+                \\"arr\\": [
+                    \\"test\\",
+                    1,
+                    true,
                     {
+                        \\"raw\\": {
+                            \\"test\\": \\"test\\"
+                        }
+                    }
+                ],
+                \\"isl\\": [
+                    {
+                        \\"@\\": 0,
                         \\"arr\\": [
                             \\"test\\",
                             1,
                             true,
                             {
-                                \\"raw\\": {
-                                    \\"test\\": \\"test\\"
-                                }
+                                \\"test\\": \\"test\\"
                             }
-                        ],
-                        \\"isl\\": [
-                            {
-                                \\"@\\": 0,
-                                \\"arr\\": [
-                                    \\"test\\",
-                                    1,
-                                    true,
-                                    {
-                                        \\"test\\": \\"test\\"
-                                    }
-                                ]
-                            }
-                        ],
-                        \\"ps\\": {
-                            \\"10\\": \\"test\\",
-                            \\"test\\": \\"test\\"
-                        },
-                        \\"len\\": 11
+                        ]
                     }
-                ]
+                ],
+                \\"ps\\": {
+                    \\"10\\": \\"test\\",
+                    \\"test\\": \\"test\\"
+                },
+                \\"len\\": 11
             }
-        }
+        ]
     }
 }"
 `;
@@ -274,50 +190,36 @@ exports[`Serialization > should serialize Typed Arrays (Float64Array, Int64Array
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
+        \\"arr\\": [
+            {
+                \\"ctr\\": 9,
+                \\"ab8\\": \\"\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000ð?\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000@\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\b@\\"
             },
-            \\"args\\": {
-                \\"raw\\": []
+            {
+                \\"ctr\\": 5,
+                \\"ab8\\": \\"\\\\u0001\\\\u0000\\\\u0002\\\\u0000\\\\u0003\\\\u0000\\"
             },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": 9,
-                        \\"ab8\\": \\"\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000ð?\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000@\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\u0000\\\\b@\\"
-                    },
-                    {
-                        \\"ctr\\": 5,
-                        \\"ab8\\": \\"\\\\u0001\\\\u0000\\\\u0002\\\\u0000\\\\u0003\\\\u0000\\"
-                    },
-                    {
-                        \\"mapKeys\\": {
-                            \\"arr\\": [
-                                \\"test\\"
-                            ]
-                        },
-                        \\"mapVals\\": {
-                            \\"arr\\": [
-                                \\"test\\"
-                            ]
-                        }
-                    },
-                    {
-                        \\"setVals\\": {
-                            \\"arr\\": [
-                                \\"test\\",
-                                \\"123\\"
-                            ]
-                        }
-                    }
-                ]
+            {
+                \\"mapKeys\\": {
+                    \\"arr\\": [
+                        \\"test\\"
+                    ]
+                },
+                \\"mapVals\\": {
+                    \\"arr\\": [
+                        \\"test\\"
+                    ]
+                }
+            },
+            {
+                \\"setVals\\": {
+                    \\"arr\\": [
+                        \\"test\\",
+                        \\"123\\"
+                    ]
+                }
             }
-        }
+        ]
     }
 }"
 `;
@@ -326,52 +228,38 @@ exports[`Serialization > should serialize functions 1`] = `
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
+        \\"arr\\": [
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"test1\\",
+                \\"arg\\": \\"async function* test1() {\\\\n          await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n          yield \\\\\\"test\\\\\\";\\\\n        }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"test2\\",
+                \\"arg\\": \\"async function* test2() {\\\\n            await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n            yield \\\\\\"test\\\\\\";\\\\n          }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncGeneratorFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"\\",
+                \\"arg\\": \\"async function* () {\\\\n            yield \\\\\\"test\\\\\\";\\\\n          }\\"
+            },
+            {
+                \\"ctr\\": \\"AsyncFunction\\",
+                \\"ps\\": {},
+                \\"fnName\\": \\"\\",
+                \\"arg\\": \\"async () => 5\\"
+            },
+            {
                 \\"ctr\\": 15,
                 \\"ps\\": {},
                 \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
-            },
-            \\"args\\": {
-                \\"raw\\": []
-            },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"test1\\",
-                        \\"arg\\": \\"async function* test1() {\\\\n          await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n          yield \\\\\\"test\\\\\\";\\\\n        }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"test2\\",
-                        \\"arg\\": \\"async function* test2() {\\\\n            await new Promise((resolve) => setTimeout(resolve, 1e3));\\\\n            yield \\\\\\"test\\\\\\";\\\\n          }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncGeneratorFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"async function* () {\\\\n            yield \\\\\\"test\\\\\\";\\\\n          }\\"
-                    },
-                    {
-                        \\"ctr\\": \\"AsyncFunction\\",
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"async () => 5\\"
-                    },
-                    {
-                        \\"ctr\\": 15,
-                        \\"ps\\": {},
-                        \\"fnName\\": \\"\\",
-                        \\"arg\\": \\"() => {\\\\n            return 5;\\\\n          }\\"
-                    }
-                ]
+                \\"arg\\": \\"() => {\\\\n            return 5;\\\\n          }\\"
             }
-        }
+        ]
     }
 }"
 `;
@@ -380,37 +268,23 @@ exports[`Serialization > should serialize undefined, null, NaN, Infinity, -Infin
 "{
     \\"_serializeVerId\\": \\"v8\\",
     \\"what\\": {
-        \\"ctr\\": 0,
-        \\"ps\\": {
-            \\"fn\\": {
-                \\"ctr\\": 15,
-                \\"ps\\": {},
-                \\"fnName\\": \\"\\",
-                \\"arg\\": \\"() => null\\"
+        \\"arr\\": [
+            {
+                \\"undefined\\": true
             },
-            \\"args\\": {
-                \\"raw\\": []
+            {
+                \\"raw\\": null
             },
-            \\"vArgs\\": {
-                \\"arr\\": [
-                    {
-                        \\"undefined\\": true
-                    },
-                    {
-                        \\"raw\\": null
-                    },
-                    {
-                        \\"number\\": \\"NaN\\"
-                    },
-                    {
-                        \\"number\\": \\"Infinity\\"
-                    },
-                    {
-                        \\"number\\": \\"-Infinity\\"
-                    }
-                ]
+            {
+                \\"number\\": \\"NaN\\"
+            },
+            {
+                \\"number\\": \\"Infinity\\"
+            },
+            {
+                \\"number\\": \\"-Infinity\\"
             }
-        }
+        ]
     }
 }"
 `;

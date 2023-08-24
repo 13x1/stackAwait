@@ -11,13 +11,9 @@ describe('Types', () => {
 });
 
 
-const ser = (arg: unknown) => stackAwaitOptsDefaults.serializer(() => null, [], arg);
-
-function deser(str: string): unknown {
-    return (KVIN.deserialize(str) as {
-        vArgs: unknown
-    }).vArgs;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ser = (arg: unknown) => stackAwaitOptsDefaults.serializer(arg as any);
+const deser = (str: string) => KVIN.deserialize(str)
 
 describe('Serialization', () => {
     function test(gen: () => Array<unknown>, snap = true, mapper = (e: unknown) => e) {
@@ -230,6 +226,8 @@ describe('Argument parsing', () => {
         }))
         __debug__.return_proc_args = false;
     })
+    // this test tends to be the problem child occasionally when
+    // the order of the object keys differs (i <3 JS)
     it('should work with all options after parsing', () => {
         __debug__.return_proc_args = true;
         const res = stackAwait({
@@ -240,11 +238,11 @@ describe('Argument parsing', () => {
             serializer: null as any,
         }, async n => n, 42)
         expect(ser(res)).toBe(ser({
-            vArgs: 123,
-            bThis: 456,
-            asyncScope: new Map(),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             serializer: null as any,
+            vArgs: 123,
+            asyncScope: new Map(),
+            bThis: 456,
         }))
         __debug__.return_proc_args = false;
     })
