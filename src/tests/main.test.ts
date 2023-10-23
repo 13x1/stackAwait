@@ -1,6 +1,14 @@
 import KVIN from '@/kvin2';
 import { describe, it, expect, assert } from 'vitest';
-import { stackAwait, stackAwaitOptsDefaults, __debug__ } from '@/main.js';
+import {
+    stackAwait,
+    stackAwaitOptsDefaults,
+    __debug__,
+    PromiseMap,
+    isRejection,
+    enforceStackThrows,
+    runAsyncStack,
+} from '@/main.js';
 
 describe('Types', () => {
     it('should compile', () => null);
@@ -154,8 +162,6 @@ describe('Serialization', () => {
     });
 });
 
-// 
-
 describe('Argument parsing', () => {
     it('should work with options', () => {
         __debug__.return_args = true;
@@ -243,7 +249,152 @@ describe('Argument parsing', () => {
             vArgs: 123,
             asyncScope: new Map(),
             bThis: 456,
+            rejections: "value",
         }))
         __debug__.return_proc_args = false;
     })
 });
+
+describe("stackAwait()", () => {
+    it("should throw on illegal invocations", () => {
+        __debug__.disable_logging = true
+        expect(() => stackAwait(fetch, 'test')).toThrow();
+    })
+    it("should add promises to the cache", async () => {
+        let cache = new Map;
+        let err: unknown
+        try {
+            stackAwait({
+                asyncScope: cache,
+                serializer: () => "key"
+            }, async n => n + 1, 2)
+        } catch (e) {
+            err = e;
+        }
+        expect(err).toBe(__debug__.stackAwaitError)
+        let res = cache.get("key")
+        expect(await res.promise).toBe(3)
+        expect(res.state).toBe("pending")
+    })
+    it("should return when it finds a still pending promise", async () => {
+        let cache: PromiseMap = new Map;
+        cache.set("key", {
+            state: 'pending',
+            promise: new Promise(() => {})
+        })
+        let firstSnap = ser(cache)
+        let err: unknown
+        try {
+            stackAwait({
+                asyncScope: cache,
+                serializer: () => "key"
+            }, async n => n + 1, 2)
+        } catch (e) {
+            err = e;
+        }
+        expect(err).toBe(__debug__.stackAwaitError)
+        expect(ser(cache)).toBe(firstSnap)
+    })
+    it("should return/throw rejected promises", async () => {
+        let cache: PromiseMap = new Map;
+        let testErr = new Error("test")
+        cache.set("key", {
+            state: 'rejected',
+            reason: testErr,
+            promise: new Promise(() => {})
+        })
+        let err: unknown
+        try {
+            stackAwait({
+                asyncScope: cache,
+                serializer: () => "key",
+                rejections: "throw"
+            }, async n => n + 1, 2)
+        } catch (e) {
+            err = e
+        }
+        expect(err).toBe(testErr)
+        expect(isRejection(err)).toBe(true)
+        let res = stackAwait({
+            asyncScope: cache,
+            serializer: () => "key",
+        }, async n => n + 1, 2)
+        expect(res).toBe(testErr)
+        expect(isRejection(res)).toBe(true)
+    })
+    it("should cache resolved promises", async () => {
+        let cache: PromiseMap = new Map;
+        cache.set("key", {
+            state: 'fulfilled',
+            value: 3,
+            promise: new Promise(() => {})
+        })
+        expect(stackAwait({
+            asyncScope: cache,
+            serializer: () => "key",
+        }, async n => n + 1, 2)).toBe(3)
+    })
+})
+describe("Helpers", () => {
+    it("should correctly display the error", () => {
+        let cache: PromiseMap = new Map;
+        let err: unknown
+        try {
+            stackAwait({
+                asyncScope: cache,
+            }, (async () => 1))
+        } catch (e) {
+            err = e;
+        }
+        expect(err.toString()).toBe(__debug__.errDesc)
+    })
+    it("should enforce stack throws", () => {
+        expect(() => enforceStackThrows(__debug__.stackAwaitError)).toThrow()
+        expect(() => enforceStackThrows(new Error("test"))).not.toThrow()
+    })
+})
+describe("runAsyncStack()", () => {
+    it("should generally work", async () => {
+        let obj = {
+            val: 0,
+            async increment(n: number) {
+                this.val += n
+            }
+        }
+        await runAsyncStack({
+            bThis: obj,
+        }, obj.increment, 1)
+        expect(obj.val).toBe(1)
+        let res = await runAsyncStack(input => {
+            stackAwait(() => obj.increment(input))
+            return obj.val
+        }, 1)
+        expect(res).toBe(2)
+    })
+    const ms = (n: number) => new Promise(resolve => setTimeout(resolve, n))
+    it("should detect improper async usage", async () => {
+        await expect(async () => await runAsyncStack(async () => {
+            await ms(10)
+            return stackAwait(async () => 42)
+        })).rejects.toThrow(/Illegal invocation/)
+    })
+    it("should work with async scopes", async () => {
+        let cache: PromiseMap = new Map;
+        let res = await runAsyncStack({asyncScope: cache}, async () => {
+            await ms(10)
+            return stackAwait({asyncScope: cache}, async () => 42);
+        });
+        expect(res).toBe(42)
+    })
+    it("should have an iteration limit", async () => {
+        await expect(async () => await runAsyncStack(() => {
+            stackAwait(async n => n, Math.random());
+        })).rejects.toThrow(/Maximum iterations/)
+    })
+    it("should handle rejected promises", async () => {
+        await runAsyncStack(() => {
+            let res = stackAwait(() => fetch("-"))
+            expect(isRejection(res)).toBe(true)
+        })
+    })
+})
